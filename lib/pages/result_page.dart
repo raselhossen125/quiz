@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/model/question_answer.dart';
 
+import 'question_page.dart';
+
 class ResultPage extends StatelessWidget {
   static const routeName = 'result-page';
   int _rightAnswer = 0;
@@ -82,7 +84,7 @@ class ResultPage extends StatelessWidget {
                         shadowColor: Color(0xff01BA47),
                         side: BorderSide(color: Color(0xff01BA47))),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.of(context).pushReplacementNamed(QustionPage.routeName);
                       _rightAnswer = 0;
                     },
                   ),
