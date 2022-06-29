@@ -1,6 +1,9 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, non_constant_identifier_names, prefer_final_fields, unused_field, must_be_immutable
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, non_constant_identifier_names, prefer_final_fields, unused_field, must_be_immutable, unused_element
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quiz/model/question_answer.dart';
 import 'package:quiz/pages/result_page.dart';
 import '../widget/question_set_widget.dart';
@@ -14,6 +17,34 @@ class QustionPage extends StatefulWidget {
 
 class _QustionPageState extends State<QustionPage> {
   bool _hasQuizStarted = false;
+  String _timeString = '';
+  int duration = 600;
+  late Timer _timer;
+
+  @override
+  void didChangeDependencies() {
+    _setTime();
+    super.didChangeDependencies();
+  }
+
+  _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (duration == 0) {
+        _timer.cancel();
+        Navigator.pushReplacementNamed(context, ResultPage.routeName);
+      } else {
+        setState(() {
+          duration--;
+          _setTime();
+        });
+      }
+    });
+  }
+
+  _setTime() {
+    _timeString = DateFormat('mm:ss')
+        .format(DateTime.fromMillisecondsSinceEpoch(duration * 1000));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +76,12 @@ class _QustionPageState extends State<QustionPage> {
                 onTap: () {
                   setState(() {
                     _hasQuizStarted = true;
+                    _startTimer();
                   });
                 },
                 child: Container(
-                  height: 48,
-                  width: 135,
+                  height: 45,
+                  width: 125,
                   decoration: BoxDecoration(
                       color: Colors.deepOrange,
                       borderRadius: BorderRadius.circular(25)),
@@ -62,18 +94,35 @@ class _QustionPageState extends State<QustionPage> {
                 ),
               ),
             )
-          : ListView.builder(
-              itemCount: questionAnsList.length,
-              itemBuilder: (context, index) {
-                final ques = questionAnsList[index];
-                return QuestionSetWidget(
-                  index: index,
-                  onAnswer: (value) {
-                    ques['givenAns'] = value;
-                  },
-                  q: ques,
-                );
-              },
+          : Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  _timeString,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrange,
+                    fontSize: 40,
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: questionAnsList.length,
+                    itemBuilder: (context, index) {
+                      final ques = questionAnsList[index];
+                      return QuestionSetWidget(
+                        index: index,
+                        onAnswer: (value) {
+                          ques['givenAns'] = value;
+                        },
+                        q: ques,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }
