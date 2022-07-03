@@ -18,7 +18,7 @@ class QustionPage extends StatefulWidget {
 class _QustionPageState extends State<QustionPage> {
   bool _hasQuizStarted = false;
   String _timeString = '';
-  int duration = 600;
+  int duration = 30;
   late Timer _timer;
 
   @override
@@ -61,7 +61,8 @@ class _QustionPageState extends State<QustionPage> {
             onPressed: !_hasQuizStarted
                 ? null
                 : () {
-                    Navigator.pushNamed(context, ResultPage.routeName);
+                    Navigator.pushReplacementNamed(context, ResultPage.routeName);
+                    _timer.cancel();
                   },
             icon: Icon(
               Icons.save,
